@@ -62,10 +62,10 @@ export function useJobProcessor<T extends Job>({
   /**
    * Responsible for orchestrating the processor core logic. It schedules jobs, runs them and ensures that the process is stopped when the
    * processing is complete.
-   * @param interval A NodeJs.Timer value which has to be used to stop the execution
+   * @param interval A setInterval value which has to be used to stop the execution
    * @param resolve Promise resolve argument passed from the caller. Calling it resolves the caller promise..
    */
-  function run(interval: NodeJS.Timeout, resolve: (value: unknown) => void) {
+  function run(interval: ReturnType<typeof setInterval>, resolve: (value: unknown) => void) {
     if (readyJobs.value.length === 0) {
       if (runningJobs.value.length === 0) {
         clearInterval(interval)
@@ -118,7 +118,7 @@ export function useJobProcessor<T extends Job>({
       runningJobs.value.push({ index: indexOfPoppedFile, entry: currentlyRunningJob })
 
       runBlockingJob(currentlyRunningJob)
-        .then((result) => {
+        .then(() => {
           completedJobs.value.push(currentlyRunningJob)
         })
         .catch((error) => {
